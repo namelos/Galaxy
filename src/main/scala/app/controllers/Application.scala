@@ -23,7 +23,9 @@ object Application extends App with ArticleSerializer with ActorApp {
   val route: Route =
     get {
       pathSingleSlash {
-        complete(getArticle(2))
+        parameters('index.as[Int]) { index =>
+          complete(getArticle(index))
+        }
       }
     } ~
       post {
@@ -31,6 +33,7 @@ object Application extends App with ArticleSerializer with ActorApp {
           val title = article.title
           val content = article.content
 
+          insert(Article(null, title, content))
           complete(s"title -> $title, content -> $content")
         }
       }
