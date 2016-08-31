@@ -21,22 +21,38 @@ object Application extends App with ArticleSerializer with ActorApp {
     all.map(articles => Option(articles(n)))
 
   val route: Route =
-    get {
-      pathSingleSlash {
-        parameters('index.as[Int]) { index =>
-          complete(getArticle(index))
-        }
-      }
+    pathSingleSlash {
+      complete("root")
     } ~
-      post {
-        entity(as[Article]) { article =>
-          val title = article.title
-          val content = article.content
-
-          insert(Article(null, title, content))
-          complete(s"title -> $title, content -> $content")
-        }
+    pathPrefix("ball") {
+      pathEnd {
+        complete("ball...")
+      } ~
+      pathSingleSlash {
+        complete("/ball/")
+      } ~
+      path(IntNumber) { int =>
+        complete(if (int % 2 == 0) "even ball" else "odd ball")
       }
+    }
+  //    pathSingleSlash {
+  //      get {
+  //        pathSingleSlash {
+  //          parameters('index.as[Int]) { index =>
+  //            complete(getArticle(index))
+  //          }
+  //        }
+  //      } ~
+  //        post {
+  //          entity(as[Article]) { article =>
+  //            val title = article.title
+  //            val content = article.content
+  //
+  //            insert(Article(null, title, content))
+  //            complete(s"title -> $title, content -> $content")
+  //          }
+  //        }
+  //    }
 
   Http().bindAndHandle(route, "localhost", 3000)
 }
